@@ -9,6 +9,7 @@ public class TicTacToeRemoteImpl extends UnicastRemoteObject implements TicTacTo
     private TicTacToe ticTacToe;
     private boolean myTurn;
     private char opponentMark;
+    private final int GRPPORT = 3210;
 
 
     protected TicTacToeRemoteImpl(TicTacToe ticTacToe) throws RemoteException {
@@ -58,7 +59,7 @@ public class TicTacToeRemoteImpl extends UnicastRemoteObject implements TicTacTo
         LOGGER.info("Server started");
 
         try {
-            LocateRegistry.createRegistry(2708);
+            LocateRegistry.createRegistry(GRPPORT);
         }
         catch (RemoteException e) {
             LOGGER.info("Java RMI registry already exists");
