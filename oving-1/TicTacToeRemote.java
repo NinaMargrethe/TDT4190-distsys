@@ -10,4 +10,7 @@ public interface TicTacToeRemote extends Remote {
     public void setOpponent(TicTacToeRemote remote) throws RemoteException;
     public void setOpponentMark(char opponentMark) throws RemoteException;
 
+    public boolean isMyTurn() throws RemoteException;
+    public void setMyTurn(boolean myTurn) throws RemoteException;
+
 }
