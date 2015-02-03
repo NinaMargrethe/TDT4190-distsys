@@ -11,8 +11,7 @@ import java.awt.*;
  * <p/>
  * The task is to transform it to a networking application using RMI.
  */
-public class TicTacToe extends JFrame implements ListSelectionListener
-{
+public class TicTacToe extends JFrame implements ListSelectionListener {
   private static final int BOARD_SIZE = 15;
   private final BoardModel boardModel;
   private final JTable board;
@@ -20,13 +19,11 @@ public class TicTacToe extends JFrame implements ListSelectionListener
   private final char playerMarks[] = {'X', 'O'};
   private int currentPlayer = 0; // Player to set the next mark.
 
-  public static void main(String args[])
-  {
+  public static void main(String args[]) {
     new TicTacToe();
   }
 
-  public TicTacToe()
-  {
+  public TicTacToe(){
     super("TDT4190: Tic Tac Toe");
 
     boardModel = new BoardModel(BOARD_SIZE);
@@ -61,8 +58,7 @@ public class TicTacToe extends JFrame implements ListSelectionListener
     setVisible(true);
   }
 
-  void setStatusMessage(String status)
-  {
+  void setStatusMessage(String status) {
     statusLabel.setText(status);
   }
 
@@ -74,8 +70,7 @@ public class TicTacToe extends JFrame implements ListSelectionListener
    * and is then sent to the second player. And marks from the second player is received
    * and added to the board of the first player.
    */
-  public void valueChanged(ListSelectionEvent e)
-  {
+  public void valueChanged(ListSelectionEvent e) {
     if (e.getValueIsAdjusting())
       return;
     int x = board.getSelectedColumn();
@@ -86,4 +81,13 @@ public class TicTacToe extends JFrame implements ListSelectionListener
       setStatusMessage("Player " + playerMarks[currentPlayer] + " won!");
     currentPlayer = 1 - currentPlayer; // The next turn is by the other player.
   }
+
+    public void clearBoard() {
+        for (int i = 0; i < board.getColumnCount(); i++){
+            for (int j = 0; j < board.getRowCount(); i++){
+                board.setValueAt("", i, j);
+                }
+        }
+        repaint();
+    }
 }
