@@ -1,4 +1,4 @@
-implement java.rmi.Remote
+import java.rmi.Remote;
 
 public interface TicTacToeRemote {
 }
