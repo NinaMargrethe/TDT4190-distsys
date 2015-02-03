@@ -1,11 +1,15 @@
 import java.rmi.*;
+import java.rmi.registry.LocateRegistry;
 import java.rmi.server.*;
+import java.util.logging.Logger;
 
 
 public class TicTacToeRemoteImpl extends UnicastRemoteObject implements TicTacToeRemote {
+    private final static Logger LOGGER = Logger.getLogger(TicTacToeRemote.class.getName());
     private TicTacToe ticTacToe;
     private boolean myTurn;
     private char opponentMark;
+
 
     protected TicTacToeRemoteImpl(TicTacToe ticTacToe) throws RemoteException {
         this.ticTacToe = ticTacToe;
@@ -48,4 +52,25 @@ public class TicTacToeRemoteImpl extends UnicastRemoteObject implements TicTacTo
     public void setMyTurn(boolean myTurn) throws RemoteException {
         this.myTurn = myTurn;
     }
+
+    // When a client doesn't find a server, it tries to bind itself as the server.
+    public void bind(String url) {
+        LOGGER.info("Server started");
+
+        try {
+            LocateRegistry.createRegistry(2708);
+        }
+        catch (RemoteException e) {
+            LOGGER.info("Java RMI registry already exists");
+        }
+
+        try {
+            Naming.rebind(url, this);
+            LOGGER.info("Binding self");
+        }
+        catch (Exception e) {
+            LOGGER.warning("Bind unsuccessful. Probably gonna explode soon.");
+        }
+    }
+
 }
