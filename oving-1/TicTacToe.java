@@ -149,7 +149,6 @@ public class TicTacToe extends JFrame implements ListSelectionListener {
         // Connect to server
         else {
             LOGGER.log(Level.SEVERE, "Server not found.");
-            // sett opp meg selv/"client" som motspiller til en allerede eksisterende spiller (altså, serveren)
             myMark = 'O';
 
             try {
