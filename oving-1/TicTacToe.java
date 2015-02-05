@@ -3,6 +3,12 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
+import java.rmi.ConnectException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A Tic Tac Toe application.
@@ -18,10 +24,15 @@ public class TicTacToe extends JFrame implements ListSelectionListener {
     private final JLabel statusLabel = new JLabel();
     private final char playerMarks[] = {'X', 'O'};
     private int currentPlayer = 0; // Player to set the next mark.
-    private TicTacToeRemote remote;
+    private TicTacToeRemote client;
+    private TicTacToeRemote server;
+    private final static Logger LOGGER = Logger.getLogger(TicTacToe.class.getName());
+    private final String ADDR = "localhost";
+    private char myMark;
+
 
     public static void main(String args[]) {
-        new TicTacToe();
+        new TicTacToe();;
     }
 
     public TicTacToe() {
@@ -86,13 +97,68 @@ public class TicTacToe extends JFrame implements ListSelectionListener {
     public void clearBoard() {
         for (int i = 0; i < board.getColumnCount(); i++) {
             for (int j = 0; j < board.getRowCount(); i++) {
-                board.setValueAt("", i, j);
+                board.setValueAt(" ", i, j);
             }
         }
         repaint();
     }
 
     public void setServer(TicTacToeRemote remote) {
-        this.remote = remote;
+        this.server = remote;
+    }
+
+    public void setMark(int x, int y, char mark) {
+        board.setValueAt(mark, x, y);
+    }
+
+    public void serverHandling() {
+        String url = "rmi://" + ADDR + "/RmiInt";
+
+        // Looking for server
+        try {
+            server = (TicTacToeRemote) Naming.lookup(url);
+        }
+        catch (NotBoundException nbe) {
+            LOGGER.log(Level.SEVERE, "No server registered");
+        }
+        catch (ConnectException ce) {
+            LOGGER.log(Level.SEVERE, "No RMI registry found at " + ADDR);
+        }
+        catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Exploded.");
+        }
+
+        // Initializing self as client
+        try {
+            client = new TicTacToeRemoteImpl(this);
+        }
+        catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Exploded.");
+        }
+
+        // Initializing self as server if server not found.
+        if (server == null) {
+            LOGGER.log(Level.SEVERE, "Server not found.");
+            client.bind(url);
+            try {
+                client.setMyTurn(true);
+            } catch (RemoteException e) {
+                LOGGER.log(Level.SEVERE, e.toString());
+            }
+        }
+        // Connect to server
+        else {
+            LOGGER.log(Level.SEVERE, "Server not found.");
+            // sett opp meg selv/"client" som motspiller til en allerede eksisterende spiller (altså, serveren)
+            myMark = 'O';
+
+            try {
+                client.setMyTurn(false);
+                server.setOpponentMark(myMark);
+                server.setOpponent(client);
+            } catch (RemoteException e) {
+                LOGGER.log(Level.SEVERE, e.toString());
+            }
+        }
     }
 }
