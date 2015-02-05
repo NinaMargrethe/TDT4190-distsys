@@ -32,7 +32,10 @@ public class TicTacToe extends JFrame implements ListSelectionListener {
 
 
     public static void main(String args[]) {
-        new TicTacToe();;
+        new TicTacToe();
+
+        TicTacToe opponentClient = new TicTacToe();
+        opponentClient.serverHandling();
     }
 
     public TicTacToe() {
@@ -43,12 +46,16 @@ public class TicTacToe extends JFrame implements ListSelectionListener {
         board.setFont(board.getFont().deriveFont(25.0f));
         board.setRowHeight(30);
         board.setCellSelectionEnabled(true);
+
         for (int i = 0; i < board.getColumnCount(); i++)
             board.getColumnModel().getColumn(i).setPreferredWidth(30);
+
         board.setGridColor(Color.BLACK);
         board.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
         DefaultTableCellRenderer dtcl = new DefaultTableCellRenderer();
         dtcl.setHorizontalAlignment(SwingConstants.CENTER);
+
         board.setDefaultRenderer(Object.class, dtcl);
         board.getSelectionModel().addListSelectionListener(this);
         board.getColumnModel().getSelectionModel().addListSelectionListener(this);
@@ -83,6 +90,20 @@ public class TicTacToe extends JFrame implements ListSelectionListener {
      * and added to the board of the first player.
      */
     public void valueChanged(ListSelectionEvent e) {
+
+/*        try {
+            if(!server.isMyTurn()){
+                board.setFocusable(false);
+                board.setCellSelectionEnabled(false);
+            }
+            else {
+                board.setFocusable(true);
+                board.setCellSelectionEnabled(true);
+            }
+        } catch (RemoteException re) {
+            LOGGER.log(Level.SEVERE, re.toString());
+        }*/
+/*
         if (e.getValueIsAdjusting())
             return;
         int x = board.getSelectedColumn();
@@ -91,7 +112,26 @@ public class TicTacToe extends JFrame implements ListSelectionListener {
             return;
         if (boardModel.setCell(x, y, playerMarks[currentPlayer]))
             setStatusMessage("Player " + playerMarks[currentPlayer] + " won!");
-        currentPlayer = 1 - currentPlayer; // The next turn is by the other player.
+
+        currentPlayer = 1 - currentPlayer; // The next turn is by the other player.*/
+
+        try {
+            if (server != null && client.isMyTurn())
+            {
+                setMark(e.getFirstIndex(), e.getLastIndex(), myMark);
+                try {
+                    server.setMark(e.getFirstIndex(), e.getLastIndex(), myMark);
+                    client.setMyTurn(false);
+
+
+                }
+                catch (RemoteException rex) {
+                    rex.printStackTrace();
+                }
+            }
+        } catch (RemoteException rex) {
+            rex.printStackTrace();
+        }
     }
 
     public void clearBoard() {
@@ -112,7 +152,7 @@ public class TicTacToe extends JFrame implements ListSelectionListener {
     }
 
     public void serverHandling() {
-        String url = "rmi://" + ADDR + "/RmiInt";
+        String url = /*"rmi://" + */ADDR/* + "/RmiInt"*/;
 
         // Looking for server
         try {
@@ -149,7 +189,7 @@ public class TicTacToe extends JFrame implements ListSelectionListener {
         // Connect to server
         else {
             LOGGER.log(Level.SEVERE, "Server not found.");
-            myMark = 'O';
+            myMark = 'X';
 
             try {
                 client.setMyTurn(false);
