@@ -33,7 +33,7 @@ public class TicTacToeRemoteImpl extends UnicastRemoteObject implements TicTacTo
     public void setMark(int x, int y) throws RemoteException {
         ticTacToe.setMark(x, y, opponentMark);
         this.setMyTurn(true);
-        ticTacToe.repaint();          //TODO ?
+        //ticTacToe.repaint();          //TODO ?
     }
 
     @Override

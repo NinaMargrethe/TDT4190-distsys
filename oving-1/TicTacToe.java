@@ -23,8 +23,8 @@ public class TicTacToe extends JFrame implements ListSelectionListener {
     private final JTable board;
     private final JLabel statusLabel = new JLabel();
     private final char playerMarks[] = {'X', 'O'};
-    private int currentPlayer = 0; // Player to set the next mark.
-    private TicTacToeRemote client;
+    private int currentPlayer = 'X'; // Player to set the next mark.
+    private TicTacToeRemoteImpl client;
     private TicTacToeRemote server;
     private final static Logger LOGGER = Logger.getLogger(TicTacToe.class.getName());
     private final String ADDR = "localhost";
@@ -120,7 +120,7 @@ public class TicTacToe extends JFrame implements ListSelectionListener {
             {
                 setMark(e.getFirstIndex(), e.getLastIndex(), myMark);
                 try {
-                    server.setMark(e.getFirstIndex(), e.getLastIndex(), myMark);
+                    server.setMark(e.getFirstIndex(), e.getLastIndex());
                     client.setMyTurn(false);
 
 
