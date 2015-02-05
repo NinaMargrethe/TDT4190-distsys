@@ -30,9 +30,10 @@ public class TicTacToeRemoteImpl extends UnicastRemoteObject implements TicTacTo
     }
 
     @Override
-    public void setMark(int x, int y, char mark) throws RemoteException {
-        ticTacToe.setMark(x, y, mark);
-        ticTacToe.repaint();
+    public void setMark(int x, int y) throws RemoteException {
+        ticTacToe.setMark(x, y, opponentMark);
+        this.setMyTurn(true);
+        ticTacToe.repaint();          //TODO ?
     }
 
     @Override
@@ -55,7 +56,6 @@ public class TicTacToeRemoteImpl extends UnicastRemoteObject implements TicTacTo
         this.myTurn = myTurn;
     }
 
-    @Override
     // When a client doesn't find a server, it tries to bind itself as the server.
     public void bind(String url) {
         LOGGER.info("Server started");

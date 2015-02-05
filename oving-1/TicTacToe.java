@@ -152,7 +152,7 @@ public class TicTacToe extends JFrame implements ListSelectionListener {
     }
 
     public void serverHandling() {
-        String url = /*"rmi://" + */ADDR/* + "/RmiInt"*/;
+        String url = "rmi://" + ADDR + "/RmiInt";
 
         // Looking for server
         try {
