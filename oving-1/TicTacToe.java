@@ -27,7 +27,7 @@ public class TicTacToe extends JFrame implements ListSelectionListener {
     private TicTacToeRemoteImpl client;
     private TicTacToeRemote server;
     private final static Logger LOGGER = Logger.getLogger(TicTacToe.class.getName());
-    private final String ADDR = "localhost";
+    private final String ADDR = "localhost:3210";
     private char myMark;
 
 
@@ -122,8 +122,6 @@ public class TicTacToe extends JFrame implements ListSelectionListener {
                 try {
                     server.setMark(e.getFirstIndex(), e.getLastIndex());
                     client.setMyTurn(false);
-
-
                 }
                 catch (RemoteException rex) {
                     rex.printStackTrace();
