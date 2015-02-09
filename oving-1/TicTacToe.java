@@ -3,10 +3,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
-import java.rmi.ConnectException;
-import java.rmi.Naming;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
+import java.net.MalformedURLException;
+import java.rmi.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,16 +22,17 @@ public class TicTacToe extends JFrame implements ListSelectionListener {
     private final JLabel statusLabel = new JLabel();
     private final char playerMarks[] = {'X', 'O'};
     private int currentPlayer = 'X'; // Player to set the next mark.
-    private TicTacToeRemoteImpl client;
-    private TicTacToeRemote server;
+    private TicTacToeRemoteImpl client = null;
+    private TicTacToeRemoteImpl server = null;
     private final static Logger LOGGER = Logger.getLogger(TicTacToe.class.getName());
-    private final String ADDR = "localhost:3210";
+    private final String ADDR = "localhost:62000";
     private char myMark;
 
 
     public static void main(String args[]) {
-        new TicTacToe();
-
+        TicTacToe mine = new TicTacToe();
+        mine.serverHandling();
+        //System.setSecurityManager( new RMISecurityManager() );
         TicTacToe opponentClient = new TicTacToe();
         opponentClient.serverHandling();
     }
@@ -142,7 +141,7 @@ public class TicTacToe extends JFrame implements ListSelectionListener {
     }
 
     public void setServer(TicTacToeRemote remote) {
-        this.server = remote;
+        this.server = (TicTacToeRemoteImpl) remote;
     }
 
     public void setMark(int x, int y, char mark) {
@@ -150,11 +149,11 @@ public class TicTacToe extends JFrame implements ListSelectionListener {
     }
 
     public void serverHandling() {
-        String url = "rmi://" + ADDR + "/RmiInt";
+        String url = "rmi://" + ADDR + "/TicTacToeRemoteImpl";
 
         // Looking for server
         try {
-            server = (TicTacToeRemote) Naming.lookup(url);
+            server = (TicTacToeRemoteImpl) Naming.lookup(url);
         }
         catch (NotBoundException nbe) {
             LOGGER.log(Level.SEVERE, "No server registered");
@@ -176,21 +175,28 @@ public class TicTacToe extends JFrame implements ListSelectionListener {
 
         // Initializing self as server if server not found.
         if (server == null) {
-            LOGGER.log(Level.SEVERE, "Server not found.");
-            client.bind(url);
+            LOGGER.log(Level.INFO, "Server not found, initializing self.");
             try {
                 client.setMyTurn(true);
             } catch (RemoteException e) {
                 LOGGER.log(Level.SEVERE, e.toString());
             }
+            myMark = 'X';
+            try {
+                Naming.rebind(url, client);
+            } catch (RemoteException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } catch (MalformedURLException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
         }
         // Connect to server
         else {
-            LOGGER.log(Level.SEVERE, "Server not found.");
-            myMark = 'X';
+            LOGGER.log(Level.INFO, "Lookup.");
+            myMark = 'O';
 
             try {
-                client.setMyTurn(false);
+                client.setMyTurn(true);
                 server.setOpponentMark(myMark);
                 server.setOpponent(client);
             } catch (RemoteException e) {

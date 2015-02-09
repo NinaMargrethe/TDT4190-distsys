@@ -9,7 +9,7 @@ public class TicTacToeRemoteImpl extends UnicastRemoteObject implements TicTacTo
     private TicTacToe ticTacToe;
     private boolean myTurn;
     private char opponentMark;
-    private final int GRPPORT = 3210;
+    private final int GRPPORT = 62000;
 
 
     protected TicTacToeRemoteImpl(TicTacToe ticTacToe) throws RemoteException {
